@@ -39,7 +39,8 @@ jobs:
             -f DevOpsWebApplication/Dockerfile \
             .
           
-          docker push ghcr.io/${{ github.repository }} --all-tags
+          docker push "$IMAGE:staging"
+          docker push "$IMAGE:${{ steps.semver-app.outputs.version }}"
 
 # Create GitHub Release
       - name: Create release notes
@@ -49,4 +50,4 @@ jobs:
           generateReleaseNotes: true
           body: |
             This release includes the following container image:
-            ghcr.io/${{ github.repository }}:${{ steps.semver-app.outputs.version }}
+            ghcr.io/${{ github.repository_owner }}/devopswebapplication:${{ steps.semver-app.outputs.version }}
