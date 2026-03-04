@@ -30,17 +30,13 @@ jobs:
 # Build + Push Docker image
       - name: Build and Push Docker image
         run: |
-          IMAGE="ghcr.io/${GITHUB_REPOSITORY,,}"
-          echo "Using image: $IMAGE"
-      
           docker build \
-            -t "$IMAGE:staging" \
-            -t "$IMAGE:${{ steps.semver-app.outputs.version }}" \
+            -t ghcr.io/${{ github.repository }}:staging \
+            -t ghcr.io/${{ github.repository }}:${{ steps.semver-app.outputs.version }} \
             -f DevOpsWebApplication/Dockerfile \
             .
           
-          docker push "$IMAGE:staging"
-          docker push "$IMAGE:${{ steps.semver-app.outputs.version }}"
+          docker push ghcr.io/${{ github.repository }} --all-tags
 
 # Create GitHub Release
       - name: Create release notes
@@ -51,3 +47,23 @@ jobs:
           body: |
             This release includes the following container image:
             ghcr.io/${{ github.repository_owner }}/devopswebapplication:${{ steps.semver-app.outputs.version }}
+            
+      - name: Deliver Docker Compose file to staging
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ vars.STAGING_SERVER_IP }}
+          username: ${{ vars.STAGING_SERVER_USERNAME }}
+          key: ${{ secrets.STAGING_SERVER_SSH_KEY }}
+          source: "docker-compose.yml"
+          target: "dowa/"
+
+      - name: Run Docker Compose on staging server
+        uses: appleboy/ssh-action@v1.2.1
+        with:
+          host: ${{ vars.STAGING_SERVER_IP }}
+          username: ${{ vars.STAGING_SERVER_USERNAME }}
+          key: ${{ secrets.STAGING_SERVER_SSH_KEY }}
+          script: |
+            cd dowa
+            docker compose pull
+            docker compose up -d
