@@ -30,13 +30,17 @@ jobs:
 # Build + Push Docker image
       - name: Build and Push Docker image
         run: |
+          IMAGE="ghcr.io/${GITHUB_REPOSITORY,,}"
+          echo "Using image: $IMAGE"
+
           docker build \
-            -t ghcr.io/${{ github.repository }}:staging \
-            -t ghcr.io/${{ github.repository }}:${{ steps.semver-app.outputs.version }} \
+            -t "$IMAGE:staging" \
+            -t "$IMAGE:${{ steps.semver-app.outputs.version }}" \
             -f DevOpsWebApplication/Dockerfile \
             .
-          
-          docker push ghcr.io/${{ github.repository }} --all-tags
+
+          docker push "$IMAGE:staging"
+          docker push "$IMAGE:${{ steps.semver-app.outputs.version }}"
 
 # Create GitHub Release
       - name: Create release notes
