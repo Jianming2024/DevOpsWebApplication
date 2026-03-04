@@ -1,5 +1,5 @@
 services:
   web:
-    image: ghcr.io/jianming2024/devopswebapplication:${VERSION}
+    image: ghcr.io/jianming2024/devopswebapplication:staging
     ports:
       - "8000:8080"
