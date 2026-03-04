@@ -1,0 +1,5 @@
+services:
+  web:
+    image: ghcr.io/jianming2024/devopswebapplication:${VERSION}
+    ports:
+      - "8000:8080"
