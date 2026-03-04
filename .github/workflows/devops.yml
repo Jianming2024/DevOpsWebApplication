@@ -48,6 +48,7 @@ jobs:
         with:
           tag: ${{ steps.semver-app.outputs.version }}
           generateReleaseNotes: true
+          allowUpdates: true
           body: |
             This release includes the following container image:
             ghcr.io/${{ github.repository_owner }}/devopswebapplication:${{ steps.semver-app.outputs.version }}
