@@ -98,6 +98,6 @@ jobs:
           key: ${{ secrets.PROD_SERVER_SSH_KEY }}
           port: 22
           script: |
-            echo "connected"
             cd dowa
-            ls -la
+            docker compose pull
+            docker compose up -d
